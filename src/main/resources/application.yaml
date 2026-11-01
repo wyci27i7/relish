@@ -13,11 +13,24 @@ spring:
       host: 172.24.195.136
       port: 6379
   rabbitmq:
-    host: 127.0.0.1
+    host: 172.24.195.136
     port: 5672
-    username: guest
-    password: guest
+    username: admin
+    password: 123456
     virtual-host: /
+    # 生产者确认：消息是否到达交换机（异步回调，不阻塞发送）
+    publisher-confirm-type: correlated
+    # 生产者Returns：路由不到队列时退回
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual   # 手动ACK：事务提交成功后才basicAck
+        concurrency: 1             # 开发阶段单线程消费，方便看日志
+        max-concurrency: 1
+        prefetch: 1                 # 开发阶段一次只给一条，调试友好
+
 
 mybatis:
   configuration:

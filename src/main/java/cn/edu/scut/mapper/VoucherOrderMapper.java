@@ -16,4 +16,10 @@ public interface VoucherOrderMapper {
             "where user_id = #{userId} and voucher_id = #{voucherId};")
     Integer find(Long userId, Long voucherId);
 
+    @Select("SELECT id, user_id, voucher_id, status, create_time " +
+            "FROM tb_voucher_order " +
+            "WHERE id = #{id}")
+    VoucherOrder selectById(Long id);
+
+
 }
