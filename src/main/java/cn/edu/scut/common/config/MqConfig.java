@@ -1,5 +1,6 @@
 package cn.edu.scut.common.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.ExchangeBuilder;
@@ -8,10 +9,12 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.amqp.autoconfigure.RabbitTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Slf4j
 public class MqConfig {
 
     // ===== 业务交换机 & 队列常量 =====
@@ -67,5 +70,32 @@ public class MqConfig {
     @Bean
     public MessageConverter jacksonJsonMessageConverter() {
         return new JacksonJsonMessageConverter();
+    }
+
+    /**
+     * 生产者确认：消息到达 Broker 后回调
+     */
+    @Bean
+    public RabbitTemplateCustomizer rabbitTemplateCustomizer(MessageConverter messageConverter) {
+        return rabbitTemplate -> {
+            rabbitTemplate.setMessageConverter(messageConverter);
+            // Confirm：Broker 是否收到消息
+            rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+                if (ack) {
+                    log.info("消息到达 Broker, id: {}", correlationData != null ? correlationData.getId() : "null");
+                } else {
+                    log.error("消息未到达 Broker, cause: {}", cause);
+                }
+            });
+            // Return：消息找不到队列时被退回
+            rabbitTemplate.setReturnsCallback(returned ->
+                    log.error("消息被退回, exchange: {}, routingKey: {}, replyCode: {}, replyText: {}",
+                            returned.getExchange(),
+                            returned.getRoutingKey(),
+                            returned.getReplyCode(),
+                            returned.getReplyText()
+                    )
+            );
+        };
     }
 }
