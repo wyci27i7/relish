@@ -1,0 +1,26 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: relish
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.24.195.136:3306/relish
+    username: dev
+    password: 123456
+  data:
+    redis:
+      host: 172.24.195.136
+      port: 6379
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

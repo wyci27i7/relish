@@ -1,0 +1,30 @@
+# ===== Maven 构建产物：不进 git =====
+target/
+
+# ===== IntelliJ IDEA 工程文件 =====
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ===== 其他 IDE / 编辑器 =====
+.classpath
+.project
+.settings/
+.vscode/
+.factorypath
+
+# ===== 日志和临时文件 =====
+*.log
+logs/
+*.tmp
+*.bak
+
+# ===== 操作系统自动生成 =====
+.DS_Store
+Thumbs.db
+
+# ===== 本项目按要求排除 =====
+docs/nginx/
+docs/hmdp.sql
