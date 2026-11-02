@@ -39,7 +39,6 @@ public class VoucherOrderService {
 
     public Result seckillVoucher(Long voucherId) {
         Long userId = UserHolder.getUserId();
-        long orderId = redisIdWorker.nextId("voucherOrder");
 
         Long result = stringRedisTemplate.execute(
                 SECKILL_SCRIPT,
@@ -52,6 +51,7 @@ public class VoucherOrderService {
         if (r != 0) {
             return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
         }
+        long orderId = redisIdWorker.nextId("voucherOrder");
 
         // Lua 成功：扣了 Redis 库存、sadd 了用户，现在发 MQ 消息异步落库
         VoucherOrder voucherOrder = new VoucherOrder();

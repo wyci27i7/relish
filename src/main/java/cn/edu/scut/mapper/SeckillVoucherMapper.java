@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface SeckillVoucherMapper {
 
@@ -18,5 +20,8 @@ public interface SeckillVoucherMapper {
 
     @Update("update tb_seckill_voucher set stock = stock - 1 where voucher_id = #{voucherId} and stock > 0;")
     void decreaseStock(Long voucherId);
+
+    @Select("SELECT * FROM tb_seckill_voucher")
+    List<SeckillVoucher> selectAll();
 
 }
