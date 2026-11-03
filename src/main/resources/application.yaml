@@ -5,6 +5,8 @@ spring:
   application:
     name: relish
   datasource:
+    hikari:
+      maximum-pool-size: 30
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://172.24.195.136:3306/relish
     username: dev
@@ -26,9 +28,9 @@ spring:
     listener:
       simple:
         acknowledge-mode: auto
-        concurrency: 1
-        max-concurrency: 1
-        prefetch: 1
+        concurrency: 10
+        max-concurrency: 10
+        prefetch: 10
         retry:
           enabled: true
           max-attempts: 3
