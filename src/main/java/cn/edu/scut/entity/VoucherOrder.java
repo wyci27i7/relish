@@ -1,5 +1,6 @@
 package cn.edu.scut.entity;
 
+import jdk.jshell.execution.LoaderDelegate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class VoucherOrder {
     private LocalDateTime createTime;
     private LocalDateTime payTime;
     private LocalDateTime useTime;
+    private LocalDateTime cancelTime;
     private LocalDateTime refundTime;
     private LocalDateTime updateTime;
 }

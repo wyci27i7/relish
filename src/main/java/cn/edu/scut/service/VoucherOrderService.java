@@ -1,6 +1,7 @@
 package cn.edu.scut.service;
 
 import cn.edu.scut.common.config.MqConfig;
+import cn.edu.scut.common.config.OrderTimeoutMqConfig;
 import cn.edu.scut.common.result.Result;
 import cn.edu.scut.common.utils.RedisIdWorker;
 import cn.edu.scut.common.utils.UserHolder;
@@ -60,6 +61,13 @@ public class VoucherOrderService {
         voucherOrder.setVoucherId(voucherId);
         rabbitTemplate.convertAndSend(MqConfig.ORDER_EXCHANGE, MqConfig.ORDER_SECKILL_ROUTING_KEY, voucherOrder);
 
+        // 发超时取消延迟消息
+        rabbitTemplate.convertAndSend(
+                OrderTimeoutMqConfig.ORDER_TIMEOUT_EXCHANGE,
+                OrderTimeoutMqConfig.ORDER_TIMEOUT_ROUTING_KEY,
+                voucherOrder
+        );
+
         return Result.ok(orderId);
     }
 
@@ -79,4 +87,53 @@ public class VoucherOrderService {
         // 插订单（靠 uk_user_voucher 唯一索引兜底防重复）
         voucherOrderMapper.insertVoucherOrder(voucherOrder);
     }
+
+
+    public void payOrder(Long orderId) {
+        Long userId = UserHolder.getUserId();
+        Integer updated = voucherOrderMapper.payOrder(orderId, userId);
+        if (updated == 0) {
+            throw new RuntimeException("订单不存在或状态不对");
+        }
+    }
+
+    public void verifyOrder(Long orderId) {
+        Long userId = UserHolder.getUserId();
+        Integer updated = voucherOrderMapper.verifyOrder(orderId, userId);
+        if (updated == 0) {
+            throw new RuntimeException("订单不存在或状态不对");
+        }
+    }
+
+    public void cancelOrder(Long orderId) {
+        Long userId = UserHolder.getUserId();
+        int updated = voucherOrderMapper.cancelOrder(orderId, userId);
+        if (updated == 0) {
+            throw new RuntimeException("订单不存在或状态不对");
+        }
+    }
+
+    public void applyRefund(Long orderId) {
+        Long userId = UserHolder.getUserId();
+        int updated = voucherOrderMapper.applyRefund(orderId, userId);
+        if (updated == 0) {
+            throw new RuntimeException("订单状态不对，无法申请退款");
+        }
+    }
+
+    public void approveRefund(Long orderId) {
+        int updated = voucherOrderMapper.approveRefund(orderId);
+        if (updated == 0) {
+            throw new RuntimeException("订单状态不对，无法审核退款");
+        }
+    }
+
+    public void refundSuccess(Long orderId) {
+        int updated = voucherOrderMapper.refundSuccess(orderId);
+        if (updated == 0) {
+            throw new RuntimeException("订单状态不对，退款失败");
+        }
+    }
+
+
 }
