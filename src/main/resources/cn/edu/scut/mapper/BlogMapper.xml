@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.scut.mapper.BlogMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tb_blog (shop_id, user_id, title, images, content)
+        VALUES (#{shopId}, #{userId}, #{title}, #{images}, #{content})
+    </insert>
+
+    <select id="selectById" resultType="cn.edu.scut.entity.Blog">
+        SELECT * FROM tb_blog WHERE id = #{id}
+    </select>
+
+    <select id="selectByIds" resultType="cn.edu.scut.entity.Blog">
+        SELECT * FROM tb_blog WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>
